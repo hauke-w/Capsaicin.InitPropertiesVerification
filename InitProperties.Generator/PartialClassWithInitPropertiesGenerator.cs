@@ -24,33 +24,40 @@ namespace InitProperties.Generator
 
         private const string MessageIdPropertyIsValueTypeButNotNullable = DiagnosticIdPrefix + "001";
         private const string MessagePropertyIsValueTypeButNotNullable = "The property '{0}' has value type but is not nullable. Therefore, it will not be verified.";
-        private const string TitlePropertyIsValueTypeButNotNullable = "Property cannot be verified.";        
+        private const string TitlePropertyIsValueTypeButNotNullable = "Property cannot be verified.";
 
         /// <inheritdoc/>
         public void Initialize(GeneratorInitializationContext context)
         {
-            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
             //Debugger.Launch(); // enable this line for debugging
+            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
         }
 
         /// <inheritdoc/>
         public void Execute(GeneratorExecutionContext context)
         {
-            if (context.SyntaxContextReceiver is SyntaxReceiver syntaxReceiver
-                && syntaxReceiver.TypeSymbol is not null)
+            if (context.SyntaxContextReceiver is SyntaxReceiver syntaxReceiver)
             {
-                var typeSymbol = syntaxReceiver.TypeSymbol;
-                var classSource = GenerateVerifyInitPropertiesClassFragment(typeSymbol, context);
-                var hintName = typeSymbol.Name + "_VerifyInitProperties.cs";
-                context.AddSource(hintName, SourceText.From(classSource, Encoding.UTF8));
+                foreach (var (typeSymbol, typeKind) in syntaxReceiver.Types)
+                {
+                    var source = GenerateVerifyInitProperties(typeSymbol, typeKind, context);
+                    var hintName = typeSymbol.Name + "_VerifyInitProperties.cs";
+                    context.AddSource(hintName, SourceText.From(source, Encoding.UTF8));
+                }                
             }
         }
 
-        private string GenerateVerifyInitPropertiesClassFragment(INamedTypeSymbol typeSymbol, GeneratorExecutionContext context)
+        private string GenerateVerifyInitProperties(INamedTypeSymbol typeSymbol, string typeKind, GeneratorExecutionContext context)
         {
             string namespaceName = typeSymbol.ContainingNamespace.ToDisplayString();
-            bool isBase = !HasVerifiesInitPropertiesAttributeRecursive(typeSymbol.BaseType);
-            var inheritanceModifier = isBase ? "virtual" : "override";
+            bool isStruct = typeKind == "struct";
+            bool isBase = isStruct || !HasVerifiesInitPropertiesAttributeRecursive(typeSymbol.BaseType);
+            var (inheritanceModifier, visibility) = (isBase, typeKind) switch
+            {
+                (_, "struct") => (string.Empty, "private"),
+                (true, _) => ("virtual ", "protected"),
+                _ => ("override ", "protected")
+            };
             List<string> localPropertyNames = GetInitProperties(typeSymbol, context);
             var memberNotNullAttribute = $"[MemberNotNull({string.Join(", ", localPropertyNames.Select(p => $"nameof({p})"))})]";
 
@@ -59,16 +66,18 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace {namespaceName}
 {{
-    partial class {typeSymbol.Name}
+    partial {typeKind} {typeSymbol.Name}
     {{");
 
-            if (isBase)
+            if (!isStruct)
             {
-                source.Append(@"
+                if (isBase)
+                {
+                    source.Append(@"
         public bool IsInitialized { get; private set; }");
-            }
+                }
 
-            source.Append($@"
+                source.Append($@"
         /// <summary>
         /// Verifies that all required init properties have a value that is not null
         /// unless this verification has already been done (i.e. <see cref=""IsInitialized""/> is true).
@@ -78,7 +87,7 @@ namespace {namespaceName}
         /// init property has a value of null.
         /// </exception>
         {memberNotNullAttribute}
-        protected {inheritanceModifier} void VerifyIsInitializedOnce()
+        protected {inheritanceModifier}void VerifyIsInitializedOnce()
         {{
             if (!IsInitialized)
             {{
@@ -86,7 +95,10 @@ namespace {namespaceName}
                 IsInitialized = true;
             }}
         }}
+");
+            }
 
+            source.Append($@"
         /// <summary>
         /// Verifies that all required init properties have a value that is not null.
         /// </summary>
@@ -94,9 +106,8 @@ namespace {namespaceName}
         /// Thrown if any required init property has a value of null.
         /// </exception>
         {memberNotNullAttribute}
-        protected {inheritanceModifier} void VerifyIsInitialized()
+        {visibility} {inheritanceModifier}void VerifyIsInitialized()
         {{
-            GetNotInitializedPropertyName();
             var propertyName = GetNotInitializedPropertyName();
             if (propertyName is not null)
             {{
@@ -104,7 +115,7 @@ namespace {namespaceName}
             }}
         }}
 
-        protected virtual string? GetNotInitializedPropertyName()
+        {visibility} {inheritanceModifier}string? GetNotInitializedPropertyName()
         {{");
 
             foreach (var propertyName in localPropertyNames)
@@ -154,7 +165,7 @@ namespace {namespaceName}
             return initProperties;
         }
 
-        private static void ReportDiagnostic(GeneratorExecutionContext context, ISymbol forSymbol, string messageId, string title, string messageFormat, DiagnosticSeverity defaultSeverity, bool isEnabledByDefault=true)
+        private static void ReportDiagnostic(GeneratorExecutionContext context, ISymbol forSymbol, string messageId, string title, string messageFormat, DiagnosticSeverity defaultSeverity, bool isEnabledByDefault = true)
         {
             var descriptor = new DiagnosticDescriptor(messageId, title, messageFormat, MessageCategory, defaultSeverity, isEnabledByDefault);
             var diagnostic = Diagnostic.Create(descriptor, forSymbol.Locations.FirstOrDefault(), forSymbol.Name);
@@ -175,7 +186,7 @@ namespace {namespaceName}
 
         private class SyntaxReceiver : ISyntaxContextReceiver
         {
-            public INamedTypeSymbol? TypeSymbol { get; private set; }
+            public List<(INamedTypeSymbol Symbol, string Kind)> Types { get; } = new();
 
             public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
             {
@@ -183,7 +194,13 @@ namespace {namespaceName}
                     && context.SemanticModel.GetDeclaredSymbol(typeDeclarationSyntax) is INamedTypeSymbol { TypeKind: TypeKind.Class or TypeKind.Struct } typeSymbol
                     && HasVerifiesInitPropertiesAttribute(typeSymbol))
                 {
-                    TypeSymbol = typeSymbol;
+                    var kind = typeSymbol.TypeKind switch
+                    {
+                        TypeKind.Struct => "struct",
+                        _ when typeDeclarationSyntax is RecordDeclarationSyntax => "record",
+                        _ => "class"
+                    };
+                    Types.Add((typeSymbol, kind));
                 }
             }
         }
