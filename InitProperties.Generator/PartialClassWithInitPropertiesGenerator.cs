@@ -16,10 +16,11 @@ namespace InitProperties.Generator
         private const string RequiredAttributeFullName = "System.ComponentModel.DataAnnotations.RequiredAttribute";
 
         private const string DiagnosticIdPrefix = "IPG";
+        private const string MessageCategory = "InitProperties.Generator";
+
         private const string MessageIdPropertyIsValueTypeButNotNullable = DiagnosticIdPrefix + "001";
         private const string MessagePropertyIsValueTypeButNotNullable = "The property '{0}' has value type but is not nullable. Therefore, it will not be verified.";
-        private const string TitlePropertyIsValueTypeButNotNullable = "Property cannot be verified.";
-        private const string MessageCategory = "InitProperties.Generator";
+        private const string TitlePropertyIsValueTypeButNotNullable = "Property cannot be verified.";        
 
         public void Initialize(GeneratorInitializationContext context)
         {
@@ -32,8 +33,9 @@ namespace InitProperties.Generator
             if (context.SyntaxContextReceiver is SyntaxReceiver syntaxReceiver
                 && syntaxReceiver.TypeSymbol is not null)
             {
-                var classSource = GenerateVerifyInitPropertiesClassFragment(syntaxReceiver.TypeSymbol, context);
-                var hintName = syntaxReceiver.TypeSymbol.Name + "_VerifyInitProperties.cs";
+                var typeSymbol = syntaxReceiver.TypeSymbol;
+                var classSource = GenerateVerifyInitPropertiesClassFragment(typeSymbol, context);
+                var hintName = typeSymbol.Name + "_VerifyInitProperties.cs";
                 context.AddSource(hintName, SourceText.From(classSource, Encoding.UTF8));
             }
         }
@@ -135,9 +137,7 @@ namespace {namespaceName}
                 {
                     if (propertySymbol.Type.IsValueType && propertySymbol.Type.NullableAnnotation == NullableAnnotation.NotAnnotated)
                     {
-                        var descriptor = new DiagnosticDescriptor(MessageIdPropertyIsValueTypeButNotNullable, TitlePropertyIsValueTypeButNotNullable, MessagePropertyIsValueTypeButNotNullable, MessageCategory, DiagnosticSeverity.Warning, true);
-                        var diagnostic = Diagnostic.Create(descriptor, propertySymbol.Locations.FirstOrDefault(), propertySymbol.Name);
-                        context.ReportDiagnostic(diagnostic);
+                        ReportDiagnostic(context, propertySymbol, MessageIdPropertyIsValueTypeButNotNullable, TitlePropertyIsValueTypeButNotNullable, MessagePropertyIsValueTypeButNotNullable, DiagnosticSeverity.Warning);
                     }
                     else
                     {
@@ -146,6 +146,13 @@ namespace {namespaceName}
                 }
             }
             return initProperties;
+        }
+
+        private static void ReportDiagnostic(GeneratorExecutionContext context, ISymbol forSymbol, string messageId, string title, string messageFormat, DiagnosticSeverity defaultSeverity, bool isEnabledByDefault=true)
+        {
+            var descriptor = new DiagnosticDescriptor(messageId, title, messageFormat, MessageCategory, defaultSeverity, isEnabledByDefault);
+            var diagnostic = Diagnostic.Create(descriptor, forSymbol.Locations.FirstOrDefault(), forSymbol.Name);
+            context.ReportDiagnostic(diagnostic);
         }
 
         private static bool HasVerifiesInitPropertiesAttributeRecursive(INamedTypeSymbol? typeSymbol)
