@@ -9,6 +9,10 @@ using System.Text;
 
 namespace InitProperties.Generator
 {
+    /// <summary>
+    /// Generates verification code for init properties annotated with "Required" attribute.
+    /// The containing class must be annotated with "VerifiesInitProperties" attribute.
+    /// </summary>
     [Generator]
     public class PartialClassWithInitPropertiesGenerator : ISourceGenerator
     {
@@ -22,12 +26,14 @@ namespace InitProperties.Generator
         private const string MessagePropertyIsValueTypeButNotNullable = "The property '{0}' has value type but is not nullable. Therefore, it will not be verified.";
         private const string TitlePropertyIsValueTypeButNotNullable = "Property cannot be verified.";        
 
+        /// <inheritdoc/>
         public void Initialize(GeneratorInitializationContext context)
         {
             context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
             //Debugger.Launch(); // enable this line for debugging
         }
 
+        /// <inheritdoc/>
         public void Execute(GeneratorExecutionContext context)
         {
             if (context.SyntaxContextReceiver is SyntaxReceiver syntaxReceiver
