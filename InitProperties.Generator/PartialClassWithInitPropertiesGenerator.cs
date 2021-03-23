@@ -15,9 +15,16 @@ namespace InitProperties.Generator
         private const string VerifiesInitPropertiesAttributeFullName = "InitProperties.Reflection.VerifiesInitPropertiesAttribute";
         private const string RequiredAttributeFullName = "System.ComponentModel.DataAnnotations.RequiredAttribute";
 
+        private const string DiagnosticIdPrefix = "IPG";
+        private const string MessageIdPropertyIsValueTypeButNotNullable = DiagnosticIdPrefix + "001";
+        private const string MessagePropertyIsValueTypeButNotNullable = "The property '{0}' has value type but is not nullable. Therefore, it will not be verified.";
+        private const string TitlePropertyIsValueTypeButNotNullable = "Property cannot be verified.";
+        private const string MessageCategory = "InitProperties.Generator";
+
         public void Initialize(GeneratorInitializationContext context)
         {
             context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
+            //Debugger.Launch(); // enable this line for debugging
         }
 
         public void Execute(GeneratorExecutionContext context)
@@ -36,7 +43,7 @@ namespace InitProperties.Generator
             string namespaceName = typeSymbol.ContainingNamespace.ToDisplayString();
             bool isBase = !HasVerifiesInitPropertiesAttributeRecursive(typeSymbol.BaseType);
             var inheritanceModifier = isBase ? "virtual" : "override";
-            List<string> localPropertyNames = GetInitProperties(typeSymbol);
+            List<string> localPropertyNames = GetInitProperties(typeSymbol, context);
             var memberNotNullAttribute = $"[MemberNotNull({string.Join(", ", localPropertyNames.Select(p => $"nameof({p})"))})]";
 
             var source = new StringBuilder($@"using System;
@@ -110,7 +117,7 @@ namespace {namespaceName}
             return source.ToString();
         }
 
-        private List<string> GetInitProperties(INamedTypeSymbol typeSymbol)
+        private List<string> GetInitProperties(INamedTypeSymbol typeSymbol, GeneratorExecutionContext context)
         {
             var initProperties = new List<string>();
             foreach (var memberSymbol in typeSymbol.GetMembers())
@@ -126,7 +133,16 @@ namespace {namespaceName}
                     } propertySymbol
                     && HasAttribute(memberSymbol, RequiredAttributeFullName))
                 {
-                    initProperties.Add(propertySymbol.Name);
+                    if (propertySymbol.Type.IsValueType && propertySymbol.Type.NullableAnnotation == NullableAnnotation.NotAnnotated)
+                    {
+                        var descriptor = new DiagnosticDescriptor(MessageIdPropertyIsValueTypeButNotNullable, TitlePropertyIsValueTypeButNotNullable, MessagePropertyIsValueTypeButNotNullable, MessageCategory, DiagnosticSeverity.Warning, true);
+                        var diagnostic = Diagnostic.Create(descriptor, propertySymbol.Locations.FirstOrDefault(), propertySymbol.Name);
+                        context.ReportDiagnostic(diagnostic);
+                    }
+                    else
+                    {
+                        initProperties.Add(propertySymbol.Name);
+                    }
                 }
             }
             return initProperties;
