@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Hauke Wittern</Authors>
+    <Copyright>Hauke Wittern</Copyright>
+    <Company />
+  </PropertyGroup>
+
+</Project>
