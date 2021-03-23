@@ -17,8 +17,6 @@ namespace Example
 
         public int? MyProperty2 { get; init; }
 
-        public int MyProperty3 { get; set; }
-
         public override string ToString()
         {
             VerifyIsInitializedOnce();
