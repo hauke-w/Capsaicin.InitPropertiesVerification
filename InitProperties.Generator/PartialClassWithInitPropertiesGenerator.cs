@@ -74,7 +74,7 @@ namespace {namespaceName}
                 if (isBase)
                 {
                     source.Append(@"
-        public bool IsInitialized { get; private set; }");
+        public bool IsInitialized { get; protected set; }");
                 }
 
                 source.Append($@"
