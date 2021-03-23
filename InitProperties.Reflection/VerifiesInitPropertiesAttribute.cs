@@ -10,8 +10,5 @@ namespace InitProperties.Reflection
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false, AllowMultiple = true)]
     public sealed class VerifiesInitPropertiesAttribute : Attribute
     {
-        public VerifiesInitPropertiesAttribute()
-        {
-        }
     }
 }
