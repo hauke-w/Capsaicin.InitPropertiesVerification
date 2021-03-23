@@ -16,6 +16,7 @@ namespace Example
 
         public override string ToString()
         {
+            // call VerifyIsInitializedOnce or VerifyIsInitialized to get rid of the null warnings
             VerifyIsInitializedOnce();
             return "Property1: " + MyProperty.Value.ToString() // no warning
                 + ", Property2: " + MyProperty2.Value.ToString() // null warning

@@ -21,6 +21,8 @@ namespace Example
 
         public override string ToString()
         {
+            // call VerifyIsInitialized to get rid of the null warnings
+            // Structs do not have VerifyIsInitializedOnce.
             VerifyIsInitialized();
             return MyProperty.Value // no null warning on MyProperty because it it is verified in VerifyIsInitializedOnce.
                 + " x " 
