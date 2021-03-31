@@ -49,8 +49,10 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace {namespaceName}
 {{
-    partial {typeKind} {typeSymbol.Name}
-    {{");
+    partial {typeKind} {typeSymbol.Name}");
+                AppendTypeParameters(source, typeSymbol);
+                source.Append(@"
+    {");
 
                 if (!isStruct)
                 {
@@ -121,6 +123,29 @@ namespace {namespaceName}
     }}
 }}");
                 return source.ToString();
+            }
+
+            private static void AppendTypeParameters(StringBuilder source, INamedTypeSymbol typeSymbol)
+            {
+                var typeParameters = typeSymbol.TypeParameters;
+                if (typeParameters.Length > 0)
+                {
+                    source.Append('<');
+                    bool first = true;
+                    foreach (var typeParameter in typeParameters)
+                    {
+                        if (first)
+                        {
+                            first = false;
+                        }
+                        else
+                        {
+                            source.Append(", ");
+                        }
+                        source.Append(typeParameter.Name);
+                    }
+                    source.Append('>');
+                }
             }
 
             private List<string> GetInitProperties(INamedTypeSymbol typeSymbol, GeneratorExecutionContext context)
