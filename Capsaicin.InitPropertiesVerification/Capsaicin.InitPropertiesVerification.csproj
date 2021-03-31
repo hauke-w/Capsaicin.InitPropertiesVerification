@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <Authors>Hauke Wittern</Authors>
     <Copyright>Hauke Wittern</Copyright>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>Provides the runtime components related to Capsaicin.InitPropertiesVerification.Generator such as the required Attribute classes.</Description>
     <Version>0.1.0-beta.1</Version>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
