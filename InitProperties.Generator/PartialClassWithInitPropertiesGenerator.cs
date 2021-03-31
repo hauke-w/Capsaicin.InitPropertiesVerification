@@ -2,6 +2,8 @@
 using Microsoft.CodeAnalysis;
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 
 namespace InitProperties.Generator
 {
