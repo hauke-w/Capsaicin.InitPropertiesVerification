@@ -2,9 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>Latest</LangVersion>
+    <Nullable>enable</Nullable>
     <Authors>Hauke Wittern</Authors>
     <Copyright>Hauke Wittern</Copyright>
-    <Company />
+    <Description>Provides the runtime components related to Capsaicin.InitPropertiesVerification.Generator such as the required Attribute classes.</Description>
+    <Version>0.1.0-beta.1</Version>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>
