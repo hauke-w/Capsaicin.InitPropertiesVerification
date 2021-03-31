@@ -108,7 +108,7 @@ namespace {namespaceName}
                 foreach (var propertyName in localPropertyNames)
                 {
                     source.Append($@"
-            if (nameof({propertyName}) is null)
+            if ({propertyName} is null)
             {{
                 return nameof({propertyName});
             }}
