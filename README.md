@@ -1,1 +1,2 @@
 # InitProperties
+Provides a C# source generator that generates verification methods for init properties with a nullable type. The verification methods throw an exception if any required init property's value is null.
