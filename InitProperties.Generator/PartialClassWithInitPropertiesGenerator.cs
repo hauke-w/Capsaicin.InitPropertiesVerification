@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Capsaicin.CodeAnalysis.Extensions;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System;
@@ -150,7 +151,7 @@ namespace {namespaceName}
                         SetMethod: { IsInitOnly: true },
                         GetMethod: not null
                     } propertySymbol
-                    && HasAttribute(memberSymbol, RequiredAttributeFullName))
+                    && memberSymbol.HasAttribute(RequiredAttributeFullName))
                 {
                     if (propertySymbol.Type.IsValueType && propertySymbol.Type.NullableAnnotation == NullableAnnotation.NotAnnotated)
                     {
@@ -179,10 +180,7 @@ namespace {namespaceName}
         }
 
         private static bool HasVerifiesInitPropertiesAttribute(INamedTypeSymbol typeSymbol)
-            => HasAttribute(typeSymbol, VerifiesInitPropertiesAttributeFullName);
-
-        private static bool HasAttribute(ISymbol symbol, string attributeFullName)
-            => symbol.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == attributeFullName);
+            => typeSymbol.HasAttribute(VerifiesInitPropertiesAttributeFullName);
 
         private class SyntaxReceiver : ISyntaxContextReceiver
         {
@@ -194,10 +192,11 @@ namespace {namespaceName}
                     && context.SemanticModel.GetDeclaredSymbol(typeDeclarationSyntax) is INamedTypeSymbol { TypeKind: TypeKind.Class or TypeKind.Struct } typeSymbol
                     && HasVerifiesInitPropertiesAttribute(typeSymbol))
                 {
+                    
                     var kind = typeSymbol.TypeKind switch
                     {
                         TypeKind.Struct => "struct",
-                        _ when typeDeclarationSyntax is RecordDeclarationSyntax => "record",
+                        _ when typeSymbol.IsRecord => "record",
                         _ => "class"
                     };
                     Types.Add((typeSymbol, kind));
