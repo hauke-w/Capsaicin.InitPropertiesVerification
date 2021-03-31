@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Capsaicin.InitPropertiesVerification.Generator" Version="0.1.0-beta.1" />
+    <PackageReference Include="Capsaicin.InitPropertiesVerification.Generator" Version="0.1.0-beta.4" />
   </ItemGroup>
 
 </Project>

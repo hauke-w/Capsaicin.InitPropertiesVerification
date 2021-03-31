@@ -8,7 +8,7 @@
     <Copyright>Hauke Wittern</Copyright>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>Provides the runtime components related to Capsaicin.InitPropertiesVerification.Generator such as the required Attribute classes.</Description>
-    <Version>0.1.0-beta.1</Version>
+    <Version>0.1.0-beta.2</Version>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>

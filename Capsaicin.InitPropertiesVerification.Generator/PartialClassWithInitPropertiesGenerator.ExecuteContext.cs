@@ -61,6 +61,7 @@ namespace {namespaceName}
                     }
 
                     source.Append($@"
+        #nullable disable
         /// <summary>
         /// Verifies that all required init properties have a value that is not null
         /// unless this verification has already been done (i.e. <see cref=""IsInitialized""/> is true).
@@ -78,10 +79,12 @@ namespace {namespaceName}
                 IsInitialized = true;
             }}
         }}
+        #nullable enable
 ");
                 }
 
                 source.Append($@"
+        #nullable disable
         /// <summary>
         /// Verifies that all required init properties have a value that is not null.
         /// </summary>
@@ -97,6 +100,7 @@ namespace {namespaceName}
                 throw new InvalidOperationException($""Property '{{propertyName}}' is not initialized."");
             }}
         }}
+        #nullable enable
 
         {visibility} {inheritanceModifier}string? GetNotInitializedPropertyName()
         {{");
