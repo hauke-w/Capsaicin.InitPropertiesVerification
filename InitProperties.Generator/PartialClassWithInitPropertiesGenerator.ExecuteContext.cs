@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace InitProperties.Generator
+namespace Capsaicin.InitPropertiesVerification.Generator
 {
     partial class PartialClassWithInitPropertiesGenerator
     {

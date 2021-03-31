@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
-namespace InitProperties.Generator
+namespace Capsaicin.InitPropertiesVerification.Generator
 {
     /// <summary>
     /// Generates verification code for init properties annotated with "Required" attribute.
@@ -14,7 +14,7 @@ namespace InitProperties.Generator
     [Generator]
     public partial class PartialClassWithInitPropertiesGenerator : ISourceGenerator
     {
-        private const string VerifiesInitPropertiesAttributeFullName = "InitProperties.Reflection.VerifiesInitPropertiesAttribute";
+        private const string VerifiesInitPropertiesAttributeFullName = "Capsaicin.InitPropertiesVerification.VerifiesInitPropertiesAttribute";
         private const string RequiredAttributeFullName = "System.ComponentModel.DataAnnotations.RequiredAttribute";
 
         private const string DiagnosticIdPrefix = "IPG";

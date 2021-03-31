@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 
-namespace InitProperties.Generator
+namespace Capsaicin.InitPropertiesVerification.Generator
 {
     partial class PartialClassWithInitPropertiesGenerator
     {

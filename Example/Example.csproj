@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\InitProperties.Generator\InitProperties.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    <ProjectReference Include="..\InitProperties.Reflection\InitProperties.Reflection.csproj" />
+    <ProjectReference Include="..\InitProperties.Generator\Capsaicin.InitPropertiesVerification.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\InitProperties.Reflection\Capsaicin.InitPropertiesVerification.csproj" />
   </ItemGroup>
 
 </Project>

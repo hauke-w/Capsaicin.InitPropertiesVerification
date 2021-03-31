@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31019.35
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InitProperties.Generator", "InitProperties.Generator\InitProperties.Generator.csproj", "{B35D800A-96A9-42F7-B91C-6B861A71D757}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Capsaicin.InitPropertiesVerification.Generator", "InitProperties.Generator\Capsaicin.InitPropertiesVerification.Generator.csproj", "{B35D800A-96A9-42F7-B91C-6B861A71D757}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InitProperties.Reflection", "InitProperties.Reflection\InitProperties.Reflection.csproj", "{2D3A85EB-FE42-4C2D-9A42-DD8ED3CD9671}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Capsaicin.InitPropertiesVerification", "InitProperties.Reflection\Capsaicin.InitPropertiesVerification.csproj", "{2D3A85EB-FE42-4C2D-9A42-DD8ED3CD9671}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example", "Example\Example.csproj", "{C8A3368B-B955-46F7-BCC3-CCE784D0DFF6}"
 EndProject

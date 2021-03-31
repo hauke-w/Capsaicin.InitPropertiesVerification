@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace InitProperties.Reflection
+namespace Capsaicin.InitPropertiesVerification
 {
     /// <summary>
     /// Types annotated with this attribute will verify that init properties are initialized.
