@@ -1,4 +1,4 @@
-﻿using InitProperties.Reflection;
+﻿using Capsaicin.InitPropertiesVerification;
 using System.ComponentModel.DataAnnotations;
 
 namespace Example
