@@ -7,7 +7,7 @@
     <Authors>Hauke Wittern</Authors>
     <Copyright>Hauke Wittern</Copyright>
     <Description>Provides a C# source generator that generates verification methods for init properties with a nullable type. The verification methods throw an exception if any required init property's value is null.</Description>
-    <Version>0.1.0-beta.6</Version>
+    <Version>0.2.0-beta.1</Version>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <IsRoslynComponent>true</IsRoslynComponent>
