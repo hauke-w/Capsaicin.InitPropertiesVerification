@@ -33,11 +33,11 @@ namespace Capsaicin.InitPropertiesVerification.Generator
             private string GenerateVerifyInitProperties(INamedTypeSymbol typeSymbol, string typeKind, GeneratorExecutionContext context)
             {
                 string namespaceName = typeSymbol.ContainingNamespace.ToDisplayString();
-                bool isStruct = typeKind == "struct";
+                bool isStruct = typeKind is "struct" or "record struct";
                 bool isBase = isStruct || !HasVerifiesInitPropertiesAttributeRecursive(typeSymbol.BaseType);
-                var (inheritanceModifier, visibility) = (isBase, typeKind) switch
+                var (inheritanceModifier, visibility) = (isBase, isStruct) switch
                 {
-                    (_, "struct") => (string.Empty, "private"),
+                    (_, true) => (string.Empty, "private"),
                     (true, _) => ("virtual ", "protected"),
                     _ => ("override ", "protected")
                 };

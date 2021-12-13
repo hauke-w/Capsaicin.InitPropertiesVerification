@@ -12,15 +12,17 @@ namespace Capsaicin.InitPropertiesVerification.Generator
 
             public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
             {
+                var td = context.Node as TypeDeclarationSyntax;
                 if (context.Node is TypeDeclarationSyntax typeDeclarationSyntax
                     && context.SemanticModel.GetDeclaredSymbol(typeDeclarationSyntax) is INamedTypeSymbol { TypeKind: TypeKind.Class or TypeKind.Struct } typeSymbol
                     && HasVerifiesInitPropertiesAttribute(typeSymbol))
                 {
                     
-                    var kind = typeSymbol.TypeKind switch
+                    var kind = typeSymbol switch
                     {
-                        TypeKind.Struct => "struct",
-                        _ when typeSymbol.IsRecord => "record",
+                        { TypeKind: TypeKind.Struct, IsRecord:true } => "record struct",
+                        { TypeKind: TypeKind.Struct } => "struct",
+                        { IsRecord: true } => "record class",
                         _ => "class"
                     };
                     Types.Add((typeSymbol, kind));
